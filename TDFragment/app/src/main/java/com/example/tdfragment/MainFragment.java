@@ -1,29 +1,40 @@
 package com.example.tdfragment;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import java.io.Console;
 import java.util.ArrayList;
 
-public class MainFragment extends Fragment implements IFragmentsKey {
+public class MainFragment extends Fragment implements IFragmentsKey, AdapterView.OnItemClickListener {
 
-    public  MainFragment(){}
+    private ISelectedItemListener mCallBack;
+
+    public  MainFragment(){
+
+
+    }
+
+
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+        mCallBack=(ISelectedItemListener) getActivity();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View rootView=inflater.inflate(R.layout.fragment_main,container,false);
-
+        View rootView=inflater.inflate(R.layout.fragment_list,container,false);
+        ListView listView = (ListView)rootView.findViewById(R.id.listView);
+        listView.setOnItemClickListener(this);
         Character[] charactersList = new Character[]{};
         if (getArguments() != null) {
             charactersList = (Character[]) getArguments().getParcelableArray(STAR_WARS_CHARACTERS_KEY);
@@ -32,12 +43,17 @@ public class MainFragment extends Fragment implements IFragmentsKey {
 
         for (int i = 0; i < charactersList.length; i++) {
             list.add(charactersList[i].getmName());
-            Log.i("MAINFRAGMENT",charactersList[i].getmName());
 
         }
-        ListView listView = rootView.findViewById(R.id.listView);
+
         ArrayAdapter adapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, list);
         listView.setAdapter(adapter);
        return rootView;
+    }
+
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        mCallBack.onFilmItemSelected(view,position,id);
     }
 }
